@@ -68,6 +68,24 @@ describe Economic::DebtorProxy do
     end
   end
 
+  describe "find_by_email" do
+    it "can find a debtor" do
+      mock_request('Debtor_FindByEmail', {'email' => 'test@email.com'}, :found)
+      result = subject.find_by_email('test@email.com')
+      expect(result).to be_instance_of(Economic::Debtor)
+      expect(result.partial).to be_truthy
+      expect(result.persisted).to be_truthy
+      # expect(result.number).to eq(1)
+      expect(result.handle).to eq(Economic::Entity::Handle.new({:number => '1'}))
+    end
+
+    it "returns nil when there is no debtor" do
+      mock_request('Debtor_FindByEmail', {'email' => 'test@email.com'}, :not_found)
+      result = subject.find_by_email('test@email.com')
+      expect(result).to be_nil
+    end
+  end
+
   describe "find_by_telephone_and_fax_number" do
     it "can find a debtor" do
       mock_request('Debtor_FindByTelephoneAndFaxNumber', {'telephoneAndFaxNumber' => '22334455'}, :found)
